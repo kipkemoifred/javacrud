@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,18 +25,18 @@ import java.util.Map;
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
+    private final JwtTokenUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
     private final ObjectMapper mapper;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService, ObjectMapper mapper) {
+    public JwtAuthorizationFilter(JwtTokenUtil jwtUtil, UserDetailsService userDetailsService, ObjectMapper mapper) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.mapper = mapper;
     }
 
-/*    @Override
+   /* @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
         System.out.println(authorization);
@@ -64,7 +66,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         Map<String, Object> errorDetails = new HashMap<>();
 
         try {
-            String accessToken = jwtUtil.resolveToken(request);
+   /*         String accessToken = jwtUtil.resolveToken(request);
             if (accessToken == null ) {
                 filterChain.doFilter(request, response);
                 return;
@@ -78,7 +80,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 Authentication authentication =
                         new UsernamePasswordAuthenticationToken(email,"",new ArrayList<>());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+            }*/
 
         }catch (Exception e){
             errorDetails.put("message", "Authentication Error");

@@ -20,7 +20,7 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping
-//    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Book> getAllBooks(HttpServletRequest request) {
         System.out.println(request.getUserPrincipal());
         List<Book> allBooks = bookService.getAllBooks();

@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.config.JwtUtil;
-import com.example.demo.entity.ErrorRes;
-import com.example.demo.entity.LoginReq;
-import com.example.demo.entity.LoginRes;
-import com.example.demo.entity.User;
+import com.example.demo.config.CustomUserDetailsService;
+
+import com.example.demo.config.JwtTokenUtil;
+import com.example.demo.entity.*;
+import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+/*
 @Controller
 @RequestMapping("/rest/auth")
 public class AuthController {
@@ -51,3 +52,54 @@ public class AuthController {
         }
     }
 }
+*/
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/rest/auth")
+public class AuthController {
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+//    private JwtUtil jwtUtil;
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/login")
+    public String createToken(@RequestBody AuthRequest authRequest) throws Exception {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+            );
+        } catch (Exception ex) {
+            throw new Exception("Invalid username or password");
+        }
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
+        return jwtTokenUtil.generateToken(userDetails.getUsername());
+    }
+    @PostMapping("/register")
+    public String registerUser(@RequestBody RegisterRequest registerRequest) {
+        try {
+            userService.registerUser(registerRequest);
+            return "User registered successfully";
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
+
+}
+
+
